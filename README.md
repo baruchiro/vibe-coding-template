@@ -14,6 +14,7 @@ Distilled from [`baruchiro/github-management`](https://github.com/baruchiro/gith
 | `STORIES.md` | Source of truth for product behavior. Approval-gated, coverage-enforced. |
 | `scripts/check-stories.mjs` | Fails the build if a story has no tagged test (or a test tags an unknown story). Stack-agnostic. |
 | `tests/example.test.mjs` | A working example test tagged `// @story: CORE-1`, so the loop is green from the first commit. |
+| `.claude/skills/plan-project/SKILL.md` | `/plan-project` — the first-run kickoff: idea → locked stack → approved stories → first slice. |
 | `.claude/commands/ship.md` | `/ship` — the pre-push gate (typecheck, lint, story-coverage, tests, build). |
 | `.claude/skills/open-pr/SKILL.md` | `/open-pr` — run the gate, push, open the PR. |
 | `.github/workflows/ci.yml` | CI. The story-coverage job runs as-is; the rest is a placeholder for your stack. |
@@ -31,13 +32,19 @@ that `Closes #N`). It's all spelled out in `CLAUDE.md`.
 ## Starting a new project from this template
 
 1. Copy these files into your new repo (or use it as a GitHub template repo).
-2. Open `CLAUDE.md` and fill in every `<!-- FILL IN -->` section — stack,
-   commands, layout, env vars, setup. Delete the notes as you go.
-3. Point the `/ship` command and `.github/workflows/ci.yml` at your real
+2. **Kick off with the agent**: describe your idea and run `/plan-project`. It
+   walks the empty-project bootstrap — clarify scope, lock a stack, draft
+   approved stories, wire the toolchain, pick the first slice. `CLAUDE.md`'s
+   "First run" section tells the agent to do this before writing any code.
+
+   Doing it by hand instead? Steps 3–6 are that flow spelled out:
+3. Fill in every `<!-- FILL IN -->` section of `CLAUDE.md` — stack, commands,
+   layout, env vars, setup. Delete the notes as you go.
+4. Point the `/ship` command and `.github/workflows/ci.yml` at your real
    commands. Keep the `node scripts/check-stories.mjs` step.
-4. Replace the two `CORE-*` example stories in `STORIES.md` with your own (get
+5. Replace the two `CORE-*` example stories in `STORIES.md` with your own (get
    them approved first), and replace `tests/example.test.mjs` with real tests.
-5. Verify the loop is green:
+6. Verify the loop is green:
    ```sh
    node scripts/check-stories.mjs
    node --test           # or your test runner

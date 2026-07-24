@@ -11,6 +11,36 @@ code in this repository.
 
 ---
 
+## First run — the project is still empty
+
+**Read this before writing any code in a fresh clone.** You can tell the
+template hasn't been made into a real project yet when *any* of these are true:
+
+- `CLAUDE.md` still contains `<!-- FILL IN -->` placeholders under
+  [Project-specific](#project-specific-fill-these-in),
+- `STORIES.md` still contains the `CORE-1` / `CORE-2` example stories,
+- `tests/example.test.mjs` still exists.
+
+In that state, **do not jump into building features.** Plan the project first.
+Invoke the `/plan-project` skill (`.claude/skills/plan-project/SKILL.md`) — it
+turns the user's idea into a real starting point:
+
+1. Clarify the idea — problem, users, the one constraint that matters, what
+   "done enough to ship" looks like.
+2. Propose and lock the **stack**; fill in the `Project-specific` sections of
+   this file and delete the `FILL IN` notes.
+3. Draft the **initial stories** and get them approved (stories are
+   approval-gated — see below), then replace the `CORE-*` examples in
+   `STORIES.md`. Mark not-yet-built ones `<!-- @unimplemented -->`.
+4. Point `/ship` and `.github/workflows/ci.yml` at the stack's real commands
+   (keep the `node scripts/check-stories.mjs` step).
+5. Pick the **first vertical slice** and hand off to implement it test-first.
+
+Delete `tests/example.test.mjs` once real tests exist, and delete this whole
+"First run" section once the project is underway.
+
+---
+
 ## How we work (portable defaults)
 
 These are the process rules that make a project safe to hand to an AI agent
