@@ -20,3 +20,6 @@ npm-debug.log*
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# superpowers brainstorming visual-companion runtime files
+.superpowers/

@@ -1,111 +1,97 @@
 ---
 name: plan-project
-description: Turns an idea into a runnable plan for a project cloned from this template — clarifies scope, locks a stack, drafts an approved initial STORIES.md, wires the toolchain, and picks the first vertical slice. Use on a fresh clone (placeholders still present), or when the user says "plan the project", "let's start", "kick off", "what should we build first", or describes a new app/idea from scratch.
+description: First-run kickoff for a project cloned from this template. Orchestrates the bundled superpowers planning skills (brainstorming → writing-plans) and adds the template-specific glue — an approval-gated STORIES.md, filled-in CLAUDE.md, and wired toolchain. Use on a fresh clone (placeholders still present), or when the user says "plan the project", "let's start", "kick off", "what should we build first", or describes a new app/idea from scratch.
 ---
 
 # plan-project
 
-Get from "here's my idea" to a project that's ready to build test-first — with
-stories as the source of truth, not code written on a hunch. Run this once, at
-the start. It does planning, **not** implementation: it produces documents and
-approvals, then hands off.
+Take an idea to a project that's ready to build test-first. This skill is a thin
+**orchestrator**: the thinking is done by two battle-tested skills bundled from
+the [`obra/superpowers`](https://github.com/obra/superpowers) collection —
+
+- **`brainstorming`** — explore intent, constraints, and design; ends in an
+  approved design spec. (It hard-gates: no code until you've presented a design
+  and the user approved it.)
+- **`writing-plans`** — turn a spec into a bite-sized, test-first implementation
+  plan.
+
+What this skill adds is the glue those generic skills don't know about: this
+template's **STORIES.md** as the approval-gated source of truth, the
+**Project-specific** sections of `CLAUDE.md`, and the `/ship` + CI wiring.
 
 ## When to use
 
-- A fresh clone of this template where `CLAUDE.md` still has `<!-- FILL IN -->`
-  placeholders and `STORIES.md` still has the `CORE-*` examples.
-- The user describes a new project/app/idea and wants to start.
-- The user says "plan the project", "kick off", "what do we build first".
+- A fresh clone where `CLAUDE.md` still has `<!-- FILL IN -->` placeholders and
+  `STORIES.md` still has the `CORE-*` examples.
+- The user describes a new project and wants to start.
 
-If a project is already underway (real stories, no placeholders), don't re-run
-this — add or change stories through the normal approval-gated flow instead.
-
-## Principles
-
-- **Stories before code.** The plan's real output is an approved `STORIES.md`.
-- **Approval-gated.** Every story is proposed in chat and only written after the
-  owner says "approved" (see `CLAUDE.md` § "Stories workflow"). Never write
-  `STORIES.md` unprompted.
-- **Thin first slice.** Plan a first slice that's visible end-to-end, not a pile
-  of plumbing.
-- **Don't over-ask.** Batch clarifying questions; propose sensible defaults the
-  user can accept rather than open-ended interrogation.
+If the project is already underway (real stories, no placeholders), don't re-run
+this — add or change stories through the normal approval-gated flow, and reach
+for `brainstorming` / `writing-plans` per-feature instead.
 
 ## Workflow
 
-### 1. Understand the idea
+### 1. Brainstorm the design — invoke `brainstorming`
 
-Ask only what you can't reasonably assume. Cover, in one batched round:
+Hand off to the `brainstorming` skill. Let it drive: explore context, ask
+questions one at a time, propose approaches, present a design, and — on approval
+— write the design spec (it saves to `docs/superpowers/specs/`). Don't shortcut
+its hard gate; come back here only once the user has approved the design.
 
-- **Problem & user** — who is this for, what pain does it remove?
-- **Core loop** — the one thing a user does that makes the product worth using.
-- **Constraints** — the single hard constraint (privacy, offline, a platform, a
-  budget, a deadline) that shapes everything else.
-- **Out of scope (v1)** — what we're deliberately not doing yet.
-- **"Ship-able" bar** — what has to work for a first useful release.
+### 2. Lock the stack → fill in `CLAUDE.md`
 
-Play back a 3–5 sentence understanding and get a yes before proposing a stack.
+From the approved design, recommend a concrete stack (runtime, framework,
+language, data layer, styling, test runner, lint/format) with versions — one
+recommendation with a one-line reason each. On approval, fill the
+**Project-specific** sections of `CLAUDE.md` (purpose, stack, layout, commands,
+env vars, setup) and delete each `<!-- FILL IN -->` note.
 
-### 2. Propose and lock the stack
+### 3. Derive the stories → `STORIES.md` (approval-gated)
 
-Recommend a concrete stack (runtime, framework, language, data layer, styling,
-test runner, lint/format) with versions, matched to the constraints — one
-recommendation, with a one-line reason each, not a menu. On approval, fill in
-the **Project-specific** sections of `CLAUDE.md`:
+Translate the approved design into behavioral stories. **Stories are the
+template's source of truth for product behavior** — a different artifact from the
+superpowers design spec (which captures *how* it's built). Propose the story text
+**in chat** first:
 
-- Project purpose · Stack (locked) · File layout · Commands · Environment
-  variables · First-time setup
-
-Delete each `<!-- FILL IN -->` note as you complete its section.
-
-### 3. Draft the initial stories (approval-gated)
-
-Propose the starting `STORIES.md` **in chat** — don't write the file yet:
-
-- Group by feature area with a stable prefix (`AUTH-`, `CORE-`, `INBOX-`, …).
-- Each story is `## PREFIX-N — Title` + an "As a …, I want …, so that …"
-  paragraph. Keep each one testable and about *behavior*, not implementation.
-- Sequence them: what's in the first slice vs. what's on the roadmap.
-- Mark roadmap stories not built yet with `<!-- @unimplemented -->`.
+- Group by feature area with a stable prefix (`AUTH-`, `CORE-`, …); each story is
+  `## PREFIX-N — Title` + an "As a …, I want …, so that …" paragraph about
+  *behavior*, not implementation.
+- Sequence them: first-slice stories vs. roadmap. Mark not-yet-built ones
+  `<!-- @unimplemented -->`.
 
 Iterate until the owner says "approved", then write `STORIES.md`, replacing the
 `CORE-*` examples.
 
-### 4. Sketch architecture and the first slice
+### 4. Wire the toolchain
 
-Briefly (a short doc or the chat): the shape of the code (key modules/dirs, data
-model, external integrations) and **the first vertical slice** — the smallest
-set of stories that delivers one visible end-to-end behavior. Name the stories
-it covers.
+Point `/ship` (`.claude/commands/ship.md`) and `.github/workflows/ci.yml` at the
+stack's real typecheck / lint / format / test / build commands. **Keep**
+`node scripts/check-stories.mjs`. Confirm the gate is green on the empty project
+(an all-`@unimplemented` `STORIES.md` passes).
 
-### 5. Wire the toolchain
+### 5. Plan the first slice — invoke `writing-plans`
 
-- Point `/ship` (`.claude/commands/ship.md`) at the real typecheck / lint /
-  format / test / build commands. **Keep** `node scripts/check-stories.mjs`.
-- Update `.github/workflows/ci.yml` to run the same gate.
-- Confirm the loop is green on the empty project:
-  `node scripts/check-stories.mjs` (with `@unimplemented` markers, an
-  all-roadmap `STORIES.md` passes).
+Pick the smallest vertical slice that delivers one visible end-to-end behavior;
+name the story IDs it covers. Hand off to `writing-plans` to produce the
+implementation plan for that slice (bite-sized, test-first tasks).
 
-### 6. Hand off
+### 6. Hand off to implementation
 
-Summarize: the locked stack, the approved stories, the first slice and its story
-IDs, and the immediate next step — implement the first slice **test-first**
-(write the tagged test, watch it fail, make it pass). Then stop; implementation
-is a separate step.
+Implement the first slice **test-first**, per this template's workflow: write the
+`@story:`-tagged test, watch it fail, make it pass, run `/ship`. Delete
+`tests/example.test.mjs` once real tests exist. Then stop — implementation is a
+separate step.
+
+> `writing-plans` offers a superpowers execution hand-off
+> (`subagent-driven-development` / `executing-plans`). Those aren't bundled by
+> default; this template's own test-first + `/ship` loop is enough. Add them if
+> you want them: `npx skills add obra/superpowers --skill executing-plans --copy`.
 
 ## Output checklist
 
+- [ ] Design spec written & approved (via `brainstorming`).
 - [ ] `CLAUDE.md` Project-specific sections filled, `FILL IN` notes removed.
 - [ ] `STORIES.md` reflects approved stories; `CORE-*` examples gone.
 - [ ] `/ship` and CI point at real commands; story-coverage step kept.
-- [ ] First vertical slice identified by story ID.
+- [ ] First slice planned (via `writing-plans`), identified by story ID.
 - [ ] `tests/example.test.mjs` deleted once real tests exist.
-
-## Optional: richer PM tooling
-
-If the user's org has the `product-management` plugin (marketplace
-`knowledge-work-plugins`), its `/product-management:write-spec` and
-`/product-management:roadmap-update` skills pair well with steps 1–4 for a
-heavier spec or a living roadmap. It's an enhancement, not a dependency — this
-skill is self-contained without it.

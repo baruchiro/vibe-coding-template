@@ -14,7 +14,8 @@ Distilled from [`baruchiro/github-management`](https://github.com/baruchiro/gith
 | `STORIES.md` | Source of truth for product behavior. Approval-gated, coverage-enforced. |
 | `scripts/check-stories.mjs` | Fails the build if a story has no tagged test (or a test tags an unknown story). Stack-agnostic. |
 | `tests/example.test.mjs` | A working example test tagged `// @story: CORE-1`, so the loop is green from the first commit. |
-| `.claude/skills/plan-project/SKILL.md` | `/plan-project` — the first-run kickoff: idea → locked stack → approved stories → first slice. |
+| `.claude/skills/plan-project/SKILL.md` | `/plan-project` — the first-run kickoff: orchestrates the superpowers planning skills and adds STORIES.md + toolchain wiring. |
+| `.claude/skills/brainstorming/` · `.claude/skills/writing-plans/` | Planning skills vendored from [`obra/superpowers`](https://github.com/obra/superpowers) via `npx skills`. Recorded in `skills-lock.json`; update with `npx skills update`. |
 | `.claude/commands/ship.md` | `/ship` — the pre-push gate (typecheck, lint, story-coverage, tests, build). |
 | `.claude/skills/open-pr/SKILL.md` | `/open-pr` — run the gate, push, open the PR. |
 | `.github/workflows/ci.yml` | CI. The story-coverage job runs as-is; the rest is a placeholder for your stack. |
@@ -49,6 +50,28 @@ that `Closes #N`). It's all spelled out in `CLAUDE.md`.
    node scripts/check-stories.mjs
    node --test           # or your test runner
    ```
+
+## Planning skills (vendored from a global collection)
+
+Full project planning is handled by two skills pulled from the
+[`obra/superpowers`](https://github.com/obra/superpowers) collection with the
+[`skills`](https://www.npmjs.com/package/skills) CLI, then committed here so
+every clone has them offline:
+
+```sh
+npx skills add obra/superpowers --skill brainstorming --copy
+npx skills add obra/superpowers --skill writing-plans  --copy
+```
+
+- **`brainstorming`** — idea → approved design spec (hard-gates code until the
+  design is approved).
+- **`writing-plans`** — spec → bite-sized, test-first implementation plan.
+
+`/plan-project` orchestrates both and adds this template's STORIES.md + toolchain
+wiring. Provenance is pinned in `skills-lock.json`; refresh with `npx skills
+update`. Browse or add more (`test-driven-development`, `executing-plans`,
+`verification-before-completion`, …) with `npx skills add obra/superpowers
+--list`.
 
 ## The story-coverage gate
 

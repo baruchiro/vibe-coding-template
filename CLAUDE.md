@@ -22,8 +22,10 @@ template hasn't been made into a real project yet when *any* of these are true:
 - `tests/example.test.mjs` still exists.
 
 In that state, **do not jump into building features.** Plan the project first.
-Invoke the `/plan-project` skill (`.claude/skills/plan-project/SKILL.md`) — it
-turns the user's idea into a real starting point:
+Invoke the `/plan-project` skill (`.claude/skills/plan-project/SKILL.md`). It
+orchestrates the bundled `brainstorming` and `writing-plans` skills (from the
+[`obra/superpowers`](https://github.com/obra/superpowers) collection) and turns
+the user's idea into a real starting point:
 
 1. Clarify the idea — problem, users, the one constraint that matters, what
    "done enough to ship" looks like.
