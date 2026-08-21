@@ -23,3 +23,6 @@ Thumbs.db
 
 # superpowers brainstorming visual-companion runtime files
 .superpowers/
+
+# playwright-cli workspace state (browser sessions, local cli config)
+.playwright/
