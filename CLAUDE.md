@@ -106,8 +106,8 @@ Passing the gate is necessary, not sufficient. Before claiming a task done,
 actually exercise the behavior:
 
 - **UI changes** (pages, components, styling, routing, client state): drive the
-  change in a real browser (e.g. the Playwright MCP), **mobile-first** at
-  `375×667`. Snapshot the accessibility tree, exercise the golden path plus 1–2
+  change in a real browser — the `playwright-cli` skill (preferred; cheaper in
+  context than the Playwright MCP), **mobile-first** at `375×667`. Snapshot the accessibility tree, exercise the golden path plus 1–2
   adjacent flows that could have regressed, and watch the console/network for
   silent failures. If the UI is broken at 375px, the design is broken.
 - **Backend-only changes** (APIs, schema, library code with no rendered

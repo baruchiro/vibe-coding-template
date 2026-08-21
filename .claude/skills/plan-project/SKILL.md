@@ -69,6 +69,73 @@ stack's real typecheck / lint / format / test / build commands. **Keep**
 `node scripts/check-stories.mjs`. Confirm the gate is green on the empty project
 (an all-`@unimplemented` `STORIES.md` passes).
 
+#### Browser verification — install `playwright-cli`
+
+**If the stack has a UI**, set up `playwright-cli` so the agent can actually
+drive the app, as `CLAUDE.md`'s
+[Verifying your change](../../../CLAUDE.md#verifying-your-change) requires.
+Prefer it over the Playwright MCP: it's the
+[Playwright CLI for coding agents](https://playwright.dev/docs/getting-started-cli),
+and CLI commands keep large tool schemas and verbose accessibility trees out of
+the context window. Skip this whole sub-step for a backend-only stack and say so
+rather than installing it unused.
+
+The **skill** is already vendored at `.claude/skills/playwright-cli/`. What a
+fresh clone needs is the **binary**:
+
+```sh
+npm install -g @playwright/cli@latest   # any language
+playwright-cli --help
+```
+
+If the stack already depends on Playwright, use the bundled entry point instead
+of a global install — `npx playwright cli <command>` (JS/TS) or
+`python -m playwright cli <command>` (Python). Substitute that for
+`playwright-cli` in every command below.
+
+Then make the browser reachable and prove it works against the real dev server:
+
+```sh
+playwright-cli install-browser chromium
+playwright-cli open http://localhost:<dev-port> --headed
+playwright-cli resize 375 667                     # mobile-first, per CLAUDE.md
+playwright-cli snapshot
+playwright-cli close
+```
+
+To refresh the vendored skill from the installed CLI (it ships with the CLI, so
+it moves with the version):
+
+```sh
+playwright-cli install --skills          # → .claude/skills/playwright-cli/
+playwright-cli install --skills -g       # instead share it across all projects
+playwright-cli install --skills=agents   # AGENTS.md-style agents instead of claude
+```
+
+**Sandboxed environments** (Claude Code on the web, CI images, most containers)
+often ship a browser already and block the download CDN, and run as root so
+Chromium's sandbox fails. `install --skills` still succeeds there — it's
+`install-browser` that fails, and the two are independent. Point the CLI at the
+existing binary via `.playwright/cli.config.json`, which it auto-loads:
+
+```json
+{
+  "browser": {
+    "launchOptions": {
+      "executablePath": "/opt/pw-browsers/chromium",
+      "chromiumSandbox": false
+    }
+  }
+}
+```
+
+It resolves relative to the working directory, so run `playwright-cli` from the
+repo root or it silently falls back to downloading a browser. Commit the config
+when the whole team shares one container image; leave it uncommitted when the
+path is a local quirk — a wrong `executablePath` fails the launch outright
+instead of falling back. `.gitignore` already ignores everything else under
+`.playwright/`, plus `.playwright-cli/` (snapshot and screenshot output).
+
 ### 5. Plan the first slice — invoke `writing-plans`
 
 Pick the smallest vertical slice that delivers one visible end-to-end behavior;
@@ -93,5 +160,7 @@ separate step.
 - [ ] `CLAUDE.md` Project-specific sections filled, `FILL IN` notes removed.
 - [ ] `STORIES.md` reflects approved stories; `CORE-*` examples gone.
 - [ ] `/ship` and CI point at real commands; story-coverage step kept.
+- [ ] UI stack: `playwright-cli` installed and verified against the dev server
+      (or explicitly skipped as backend-only).
 - [ ] First slice planned (via `writing-plans`), identified by story ID.
 - [ ] `tests/example.test.mjs` deleted once real tests exist.

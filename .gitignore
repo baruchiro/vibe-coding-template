@@ -24,5 +24,7 @@ Thumbs.db
 # superpowers brainstorming visual-companion runtime files
 .superpowers/
 
-# playwright-cli workspace state (browser sessions, local cli config)
-.playwright/
+# playwright-cli — ignore session state, keep the committed config
+.playwright/*
+!.playwright/cli.config.json
+.playwright-cli/

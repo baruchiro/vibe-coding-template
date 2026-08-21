@@ -18,6 +18,7 @@ Distilled from [`baruchiro/github-management`](https://github.com/baruchiro/gith
 | `.claude/skills/<superpowers>/` | The full [`obra/superpowers`](https://github.com/obra/superpowers) skill set (14 skills) vendored via `npx skills`. Recorded in `skills-lock.json`; update with `npx skills update`. |
 | `.claude/commands/ship.md` | `/ship` — the pre-push gate (typecheck, lint, story-coverage, tests, build). |
 | `.claude/skills/open-pr/SKILL.md` | `/open-pr` — run the gate, push, open the PR. |
+| `.claude/skills/playwright-cli/` | Browser automation for agents, vendored via `playwright-cli install --skills`. Backs the "verify UI changes in a real browser" rule. Needs the CLI binary — `/plan-project` walks the install. |
 | `.github/workflows/ci.yml` | CI. The story-coverage job runs as-is; the rest is a placeholder for your stack. |
 
 ## The workflow in one paragraph
