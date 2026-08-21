@@ -15,7 +15,7 @@ Distilled from [`baruchiro/github-management`](https://github.com/baruchiro/gith
 | `scripts/check-stories.mjs` | Fails the build if a story has no tagged test (or a test tags an unknown story). Stack-agnostic. |
 | `tests/example.test.mjs` | A working example test tagged `// @story: CORE-1`, so the loop is green from the first commit. |
 | `.claude/skills/plan-project/SKILL.md` | `/plan-project` — the first-run kickoff: orchestrates the superpowers planning skills and adds STORIES.md + toolchain wiring. |
-| `.claude/skills/brainstorming/` · `.claude/skills/writing-plans/` | Planning skills vendored from [`obra/superpowers`](https://github.com/obra/superpowers) via `npx skills`. Recorded in `skills-lock.json`; update with `npx skills update`. |
+| `.claude/skills/<superpowers>/` | The full [`obra/superpowers`](https://github.com/obra/superpowers) skill set (14 skills) vendored via `npx skills`. Recorded in `skills-lock.json`; update with `npx skills update`. |
 | `.claude/commands/ship.md` | `/ship` — the pre-push gate (typecheck, lint, story-coverage, tests, build). |
 | `.claude/skills/open-pr/SKILL.md` | `/open-pr` — run the gate, push, open the PR. |
 | `.github/workflows/ci.yml` | CI. The story-coverage job runs as-is; the rest is a placeholder for your stack. |
@@ -51,27 +51,50 @@ that `Closes #N`). It's all spelled out in `CLAUDE.md`.
    node --test           # or your test runner
    ```
 
-## Planning skills (vendored from a global collection)
+## Superpowers skills (vendored from a global collection)
 
-Full project planning is handled by two skills pulled from the
-[`obra/superpowers`](https://github.com/obra/superpowers) collection with the
-[`skills`](https://www.npmjs.com/package/skills) CLI, then committed here so
-every clone has them offline:
+The whole [`obra/superpowers`](https://github.com/obra/superpowers) skill set is
+pulled in with the [`skills`](https://www.npmjs.com/package/skills) CLI and
+committed here, so every clone has it offline:
 
 ```sh
-npx skills add obra/superpowers --skill brainstorming --copy
-npx skills add obra/superpowers --skill writing-plans  --copy
+npx skills add obra/superpowers --skill '*' -a claude-code -y
 ```
+
+**Planning** — what `/plan-project` orchestrates:
 
 - **`brainstorming`** — idea → approved design spec (hard-gates code until the
   design is approved).
 - **`writing-plans`** — spec → bite-sized, test-first implementation plan.
 
-`/plan-project` orchestrates both and adds this template's STORIES.md + toolchain
-wiring. Provenance is pinned in `skills-lock.json`; refresh with `npx skills
-update`. Browse or add more (`test-driven-development`, `executing-plans`,
-`verification-before-completion`, …) with `npx skills add obra/superpowers
---list`.
+**Executing** a written plan:
+
+- **`executing-plans`** — run a plan in a separate session with review
+  checkpoints.
+- **`subagent-driven-development`** — run a plan's independent tasks in the
+  current session.
+- **`dispatching-parallel-agents`** — 2+ tasks with no shared state or ordering.
+- **`using-git-worktrees`** — isolate feature work from the current workspace.
+
+**Writing code** — these reinforce rules `CLAUDE.md` already states:
+
+- **`test-driven-development`** — test first, then implementation.
+- **`systematic-debugging`** — diagnose before proposing a fix.
+- **`verification-before-completion`** — evidence before any "it's done" claim.
+
+**Wrapping up:**
+
+- **`requesting-code-review`** / **`receiving-code-review`** — ask for review;
+  handle feedback with rigor instead of agreement.
+- **`finishing-a-development-branch`** — decide how to integrate finished work.
+
+**Meta:**
+
+- **`using-superpowers`** — how to find and invoke skills.
+- **`writing-skills`** — create, edit, and verify skills.
+
+Provenance is pinned in `skills-lock.json`; refresh with `npx skills update -p`.
+Browse the collection with `npx skills add obra/superpowers --list`.
 
 ## The story-coverage gate
 

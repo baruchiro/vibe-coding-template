@@ -158,6 +158,10 @@ When picking up a GitHub issue, do these **before writing any code**:
   the reader guess.
 - **Subagents** (e.g. `general-purpose` for research, `Explore` for read-only
   code search) keep the main context clean on big jobs.
+- **Superpowers skills** are vendored in `.claude/skills/` — invoke them by name
+  (`test-driven-development`, `systematic-debugging`,
+  `verification-before-completion`, `requesting-code-review`, …) instead of
+  reinventing the process. `README.md` lists the full set.
 
 ---
 

@@ -83,9 +83,9 @@ Implement the first slice **test-first**, per this template's workflow: write th
 separate step.
 
 > `writing-plans` offers a superpowers execution hand-off
-> (`subagent-driven-development` / `executing-plans`). Those aren't bundled by
-> default; this template's own test-first + `/ship` loop is enough. Add them if
-> you want them: `npx skills add obra/superpowers --skill executing-plans --copy`.
+> (`subagent-driven-development` / `executing-plans`). Both are bundled, but
+> this template's own test-first + `/ship` loop is enough for a first slice —
+> reach for them when a plan is big enough to need checkpoints or parallelism.
 
 ## Output checklist
 
