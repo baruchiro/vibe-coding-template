@@ -14,8 +14,9 @@ Distilled from [`baruchiro/github-management`](https://github.com/baruchiro/gith
 | `STORIES.md` | Source of truth for product behavior. Approval-gated, coverage-enforced. |
 | `scripts/check-stories.mjs` | Fails the build if a story has no tagged test (or a test tags an unknown story). Stack-agnostic. |
 | `tests/example.test.mjs` | A working example test tagged `// @story: CORE-1`, so the loop is green from the first commit. |
-| `.claude/skills/plan-project/SKILL.md` | `/plan-project` — the first-run kickoff: orchestrates the superpowers planning skills and adds STORIES.md + toolchain wiring. |
+| `.claude/skills/plan-project/SKILL.md` | `/plan-project` — the first-run kickoff: orchestrates the planning skills (optionally `grill-me` → `brainstorming` → `writing-plans`) and adds STORIES.md + toolchain wiring. |
 | `.claude/skills/<superpowers>/` | The full [`obra/superpowers`](https://github.com/obra/superpowers) skill set (14 skills) vendored via `npx skills`. Recorded in `skills-lock.json`; update with `npx skills update`. |
+| `.claude/skills/grill-me/`, `.claude/skills/grilling/` | A stateless, relentless-interview skill for sharpening a loose idea into concrete decisions before design starts, vendored from [`mattpocock/skills`](https://github.com/mattpocock/skills) via `npx skills`. `/plan-project` reaches for it first when the idea is still loose; `grill-me` is the user-invoked front door (`/grill-me`), `grilling` is the underlying interview it forwards to. |
 | `.claude/commands/ship.md` | `/ship` — the pre-push gate (typecheck, lint, story-coverage, tests, build). |
 | `.claude/skills/open-pr/SKILL.md` | `/open-pr` — run the gate, push, open the PR. |
 | `.claude/skills/playwright-cli/` | Browser automation for agents, vendored via `playwright-cli install --skills`. Backs the "verify UI changes in a real browser" rule. Needs the CLI binary — `/plan-project` walks the install. |
@@ -35,9 +36,10 @@ that `Closes #N`). It's all spelled out in `CLAUDE.md`.
 
 1. Copy these files into your new repo (or use it as a GitHub template repo).
 2. **Kick off with the agent**: describe your idea and run `/plan-project`. It
-   walks the empty-project bootstrap — clarify scope, lock a stack, draft
-   approved stories, wire the toolchain, pick the first slice. `CLAUDE.md`'s
-   "First run" section tells the agent to do this before writing any code.
+   walks the empty-project bootstrap — sharpen a loose idea (`grill-me`), lock a
+   stack, draft approved stories, wire the toolchain, pick the first slice.
+   `CLAUDE.md`'s "First run" section tells the agent to do this before writing
+   any code.
 
    Doing it by hand instead? Steps 3–6 are that flow spelled out:
 3. Fill in every `<!-- FILL IN -->` section of `CLAUDE.md` — stack, commands,
