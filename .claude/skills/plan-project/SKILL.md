@@ -1,19 +1,23 @@
 ---
 name: plan-project
-description: First-run kickoff for a project cloned from this template. Orchestrates the bundled superpowers planning skills (brainstorming → writing-plans) and adds the template-specific glue — an approval-gated STORIES.md, filled-in CLAUDE.md, and wired toolchain. Use on a fresh clone (placeholders still present), or when the user says "plan the project", "let's start", "kick off", "what should we build first", or describes a new app/idea from scratch.
+description: First-run kickoff for a project cloned from this template. Orchestrates the bundled planning skills (optionally grill-me → brainstorming → writing-plans) and adds the template-specific glue — an approval-gated STORIES.md, filled-in CLAUDE.md, and wired toolchain. Use on a fresh clone (placeholders still present), or when the user says "plan the project", "let's start", "kick off", "what should we build first", or describes a new app/idea from scratch.
 ---
 
 # plan-project
 
 Take an idea to a project that's ready to build test-first. This skill is a thin
-**orchestrator**: the thinking is done by two battle-tested skills bundled from
-the [`obra/superpowers`](https://github.com/obra/superpowers) collection —
+**orchestrator**: the thinking is done by battle-tested skills vendored from
+elsewhere —
 
-- **`brainstorming`** — explore intent, constraints, and design; ends in an
-  approved design spec. (It hard-gates: no code until you've presented a design
-  and the user approved it.)
-- **`writing-plans`** — turn a spec into a bite-sized, test-first implementation
-  plan.
+- **`grill-me`** (optional) — from [`mattpocock/skills`](https://github.com/mattpocock/skills).
+  A stateless, relentless interview that sharpens a loose idea into concrete
+  decisions before any design work starts. Reach for it only when the idea is
+  still vague; skip it when the user already arrives scoped.
+- **`brainstorming`** — from [`obra/superpowers`](https://github.com/obra/superpowers).
+  Explore intent, constraints, and design; ends in an approved design spec. (It
+  hard-gates: no code until you've presented a design and the user approved it.)
+- **`writing-plans`** — from `obra/superpowers`. Turn a spec into a bite-sized,
+  test-first implementation plan.
 
 What this skill adds is the glue those generic skills don't know about: this
 template's **STORIES.md** as the approval-gated source of truth, the
@@ -31,14 +35,26 @@ for `brainstorming` / `writing-plans` per-feature instead.
 
 ## Workflow
 
-### 1. Brainstorm the design — invoke `brainstorming`
+### 1. Sharpen a loose idea — invoke `grill-me` (optional)
+
+If the idea arrives loose ("something like X" with no real scope yet), grill it
+before design work starts: invoke the `grilling` skill — `grill-me`'s own
+`SKILL.md` is just a one-line forward to it, so invoke `grilling` directly. It
+interviews in rounds (a numbered frontier of questions plus your recommended
+answer each round) until every branch is settled. It's stateless — no files, no
+repo assumptions — so it's safe to run before `CLAUDE.md`/`STORIES.md` exist.
+Stay in the same conversation afterward; hand the sharpened idea straight to
+`brainstorming` next. Skip this step entirely when the user already arrives with
+a precise, scoped idea — `brainstorming`'s own clarifying questions are enough.
+
+### 2. Brainstorm the design — invoke `brainstorming`
 
 Hand off to the `brainstorming` skill. Let it drive: explore context, ask
 questions one at a time, propose approaches, present a design, and — on approval
 — write the design spec (it saves to `docs/superpowers/specs/`). Don't shortcut
 its hard gate; come back here only once the user has approved the design.
 
-### 2. Lock the stack → fill in `CLAUDE.md`
+### 3. Lock the stack → fill in `CLAUDE.md`
 
 From the approved design, recommend a concrete stack (runtime, framework,
 language, data layer, styling, test runner, lint/format) with versions — one
@@ -46,7 +62,7 @@ recommendation with a one-line reason each. On approval, fill the
 **Project-specific** sections of `CLAUDE.md` (purpose, stack, layout, commands,
 env vars, setup) and delete each `<!-- FILL IN -->` note.
 
-### 3. Derive the stories → `STORIES.md` (approval-gated)
+### 4. Derive the stories → `STORIES.md` (approval-gated)
 
 Translate the approved design into behavioral stories. **Stories are the
 template's source of truth for product behavior** — a different artifact from the
@@ -62,7 +78,7 @@ superpowers design spec (which captures *how* it's built). Propose the story tex
 Iterate until the owner says "approved", then write `STORIES.md`, replacing the
 `CORE-*` examples.
 
-### 4. Wire the toolchain
+### 5. Wire the toolchain
 
 Point `/ship` (`.claude/commands/ship.md`) and `.github/workflows/ci.yml` at the
 stack's real typecheck / lint / format / test / build commands. **Keep**
@@ -136,13 +152,13 @@ path is a local quirk — a wrong `executablePath` fails the launch outright
 instead of falling back. `.gitignore` already ignores everything else under
 `.playwright/`, plus `.playwright-cli/` (snapshot and screenshot output).
 
-### 5. Plan the first slice — invoke `writing-plans`
+### 6. Plan the first slice — invoke `writing-plans`
 
 Pick the smallest vertical slice that delivers one visible end-to-end behavior;
 name the story IDs it covers. Hand off to `writing-plans` to produce the
 implementation plan for that slice (bite-sized, test-first tasks).
 
-### 6. Hand off to implementation
+### 7. Hand off to implementation
 
 Implement the first slice **test-first**, per this template's workflow: write the
 `@story:`-tagged test, watch it fail, make it pass, run `/ship`. Delete
@@ -156,6 +172,8 @@ separate step.
 
 ## Output checklist
 
+- [ ] Loose idea sharpened via `grill-me`/`grilling` before design (or skipped
+      — idea already arrived scoped).
 - [ ] Design spec written & approved (via `brainstorming`).
 - [ ] `CLAUDE.md` Project-specific sections filled, `FILL IN` notes removed.
 - [ ] `STORIES.md` reflects approved stories; `CORE-*` examples gone.
