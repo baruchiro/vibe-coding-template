@@ -2,7 +2,8 @@
 
 A starting point for AI-driven ("vibe coding") projects. It ships the
 **process** that makes a repo safe to hand to an agent end-to-end — not a stack.
-Drop your framework of choice on top and keep the workflow.
+Choose the smallest sufficient implementation and keep the workflow — a skill
+with scripts or local MCP may be enough; an application is not the default.
 
 Distilled from [`baruchiro/github-management`](https://github.com/baruchiro/github-management).
 
@@ -36,14 +37,24 @@ that `Closes #N`). It's all spelled out in `CLAUDE.md`.
 
 1. Copy these files into your new repo (or use it as a GitHub template repo).
 2. **Kick off with the agent**: describe your idea and run `/plan-project`. It
-   walks the empty-project bootstrap — sharpen a loose idea (`grill-me`), lock a
-   stack, draft approved stories, wire the toolchain, pick the first slice.
+   walks the empty-project bootstrap — sharpen a loose idea (`grill-me`), get
+   approval for the implementation form, lock only the needed toolchain, draft
+   approved stories, wire the toolchain, pick the first slice.
    `CLAUDE.md`'s "First run" section tells the agent to do this before writing
    any code.
 
    Doing it by hand instead? Steps 3–6 are that flow spelled out:
-3. Fill in every `<!-- FILL IN -->` section of `CLAUDE.md` — stack, commands,
-   layout, env vars, setup. Delete the notes as you go.
+3. Before picking a stack, compare a skill with local scripts, local MCP, a
+   combination, and an application against the requirements. Get the owner's
+   approval for the smallest sufficient form. Justify a deployed server and a
+   custom UI separately. MCP is a tool protocol, not a synonym for a remote
+   service: scripts and local MCP can both call existing APIs, and MCP can work
+   entirely locally. Add MCP only when its standardized client-facing interface
+   earns the extra layer; API access alone is not a reason.
+   Fill in every `<!-- FILL IN -->` section of `CLAUDE.md` — stack, commands,
+   layout, env vars, setup. Record the approved form, mark unnecessary components
+   not applicable, and delete the notes as you go. Do not create infrastructure
+   just to fill a placeholder.
 4. Point the `/ship` command and `.github/workflows/ci.yml` at your real
    commands. Keep the `node scripts/check-stories.mjs` step.
 5. Replace the two `CORE-*` example stories in `STORIES.md` with your own (get

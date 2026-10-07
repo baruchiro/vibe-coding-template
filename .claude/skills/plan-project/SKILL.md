@@ -50,17 +50,51 @@ a precise, scoped idea — `brainstorming`'s own clarifying questions are enough
 ### 2. Brainstorm the design — invoke `brainstorming`
 
 Hand off to the `brainstorming` skill. Let it drive: explore context, ask
-questions one at a time, propose approaches, present a design, and — on approval
+questions one at a time, apply the implementation-form gate below while
+comparing approaches, present a design, and — on approval
 — write the design spec (it saves to `docs/superpowers/specs/`). Don't shortcut
 its hard gate; come back here only once the user has approved the design.
 
-### 3. Lock the stack → fill in `CLAUDE.md`
+#### Required gate: choose the implementation form before the stack
 
-From the approved design, recommend a concrete stack (runtime, framework,
-language, data layer, styling, test runner, lint/format) with versions — one
+Once the problem, users and acceptance criteria are clear enough, compare a
+skill with local scripts, a local MCP server, a combination, and an application.
+Do this **inside brainstorming, before asking for design approval**; do not
+approve a full-stack design and only then ask whether it was needed. If the
+initial idea is already scoped, run this check immediately. If the answer is
+unclear, clarify the missing requirement instead of scaffolding a default app.
+
+Ask whether the required outcome can be delivered without a deployed server or
+a custom UI. Recommend the smallest sufficient form, identify any requirements
+it cannot meet, and get explicit owner approval before locking a stack,
+scaffolding, or installing infrastructure. Record this decision in the design
+spec and the Project-specific section of `CLAUDE.md`.
+
+Distinguish workflow guidance from a tool protocol: a skill can run scripts and
+call existing remote APIs; a local MCP server can do the same, or operate purely
+on local data via `stdio`. MCP earns its extra packaging and lifecycle only when
+requirements need its standardized, discoverable tool interface (for example,
+reuse by multiple MCP clients). A remote API call alone is not a reason to add
+MCP, and does not require deploying a new server. A skill plus MCP is also valid
+when the workflow and reusable tool interface serve distinct needs.
+
+If an application is necessary, name the specific requirements that need a
+new remote service and those that need a custom UI **separately**. Consider the
+agent's existing interface before adding one. Revisit the decision if subsequent
+requirements introduce unmet needs; get approval before expanding the form.
+
+### 3. Lock the minimal toolchain → fill in `CLAUDE.md`
+
+From the approved design and implementation form, recommend only the needed
+stack components (runtime, framework, language, data layer, styling, test runner,
+lint/format) with versions — one
 recommendation with a one-line reason each. On approval, fill the
 **Project-specific** sections of `CLAUDE.md` (purpose, stack, layout, commands,
-env vars, setup) and delete each `<!-- FILL IN -->` note.
+env vars, setup) and delete each `<!-- FILL IN -->` note. Mark unneeded components
+and commands as not applicable with a reason; do not add a framework, database,
+dev server or build process just to fill a placeholder. For skills and MCP,
+document installation/client integration and an actual invocation instead of
+assuming a browser URL.
 
 ### 4. Derive the stories → `STORIES.md` (approval-gated)
 
@@ -83,7 +117,11 @@ Iterate until the owner says "approved", then write `STORIES.md`, replacing the
 Point `/ship` (`.claude/commands/ship.md`) and `.github/workflows/ci.yml` at the
 stack's real typecheck / lint / format / test / build commands. **Keep**
 `node scripts/check-stories.mjs`. Confirm the gate is green on the empty project
-(an all-`@unimplemented` `STORIES.md` passes).
+(an all-`@unimplemented` `STORIES.md` passes). For non-application forms, keep
+only meaningful gate commands and document why any stage is not applicable.
+Keep executable-helper tests and story coverage; pure instruction skills need
+representative agent/workflow verification rather than a fake app test. Exercise
+scripts directly, or invoke tools through a real MCP client for MCP behavior.
 
 #### Browser verification — install `playwright-cli`
 
@@ -175,6 +213,10 @@ separate step.
 - [ ] Loose idea sharpened via `grill-me`/`grilling` before design (or skipped
       — idea already arrived scoped).
 - [ ] Design spec written & approved (via `brainstorming`).
+- [ ] Implementation form compared and explicitly approved before stack/code;
+      decision recorded in the design spec and `CLAUDE.md`.
+- [ ] Remote server and custom UI each justified or explicitly unnecessary;
+      MCP's protocol layer justified if chosen over scripts alone.
 - [ ] `CLAUDE.md` Project-specific sections filled, `FILL IN` notes removed.
 - [ ] `STORIES.md` reflects approved stories; `CORE-*` examples gone.
 - [ ] `/ship` and CI point at real commands; story-coverage step kept.

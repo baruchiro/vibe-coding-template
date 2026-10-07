@@ -29,8 +29,11 @@ the user's idea into a real starting point:
 
 1. Clarify the idea — problem, users, the one constraint that matters, what
    "done enough to ship" looks like.
-2. Propose and lock the **stack**; fill in the `Project-specific` sections of
-   this file and delete the `FILL IN` notes.
+2. After clarifying requirements, get approval for the **smallest sufficient
+   implementation form** — skill with scripts, local MCP, a combination, or an
+   application — before locking the stack. Justify a remote server and a custom
+   UI separately. Fill in the `Project-specific` sections of this file and
+   delete the `FILL IN` notes; mark unnecessary components as not applicable.
 3. Draft the **initial stories** and get them approved (stories are
    approval-gated — see below), then replace the `CORE-*` examples in
    `STORIES.md`. Mark not-yet-built ones `<!-- @unimplemented -->`.
@@ -49,7 +52,43 @@ These are the process rules that make a project safe to hand to an AI agent
 end-to-end. They don't depend on the stack — keep them as-is unless you have a
 concrete reason to change them.
 
-### Stories workflow (most important — read first)
+### Choose the smallest sufficient implementation
+
+Do not assume a new project needs a full-stack application. During initial
+requirements/design work, and **before locking a stack, scaffolding code, or
+installing infrastructure**, ask:
+
+> Can the required outcome be delivered as a skill with local scripts, a local
+> MCP server, or both, without a deployed server or a custom user interface?
+
+Compare those options against an application using the actual requirements.
+Recommend the simplest sufficient option, explain the trade-offs, and get the
+owner's explicit approval. Record the decision in the design spec and this
+file's Project-specific section. If new requirements change the answer, revisit
+the decision before adding infrastructure.
+
+- **Skill with scripts:** instructions/workflow plus executable helpers, using
+  the agent's existing tools and interface. Prefer this when it covers the need.
+- **Local MCP server:** a standardized protocol for exposing tools (and, where
+  useful, resources/prompts) to MCP clients. Add this layer only for a concrete
+  need such as reuse by multiple compatible clients or protocol-level discovery
+  and structured tool contracts — not merely because a script calls an API.
+- **Combination:** a skill guides the workflow and MCP exposes reusable tools;
+  justify why both layers are useful rather than duplicating them by default.
+- **Application:** identify the specific unmet requirements before adding a
+  deployed service or custom UI. Justify each separately; one does not imply the
+  other. An existing chat/agent interface may already satisfy interaction needs.
+
+Deployment and API access are separate decisions. Both scripts and local MCP
+servers can call existing remote APIs; this does **not** require deploying a new
+server. MCP can also operate entirely on local data via `stdio`. MCP and skills
+are therefore not distinguished by whether they access a remote service.
+
+This is an owner-approved planning gate, not an automated architecture detector.
+Keep stories, tests and verification for the chosen form; do not manufacture a
+web frontend, backend, database, dev server or build step just to fill a template.
+
+### Stories workflow (approval-gated)
 
 `STORIES.md` at the repo root is the **source of truth for product behavior**.
 It is **approval-gated**: every add, edit, or delete of a story requires
@@ -180,6 +219,12 @@ When picking up a GitHub issue, do these **before writing any code**:
      runner, and lint/format tools with versions. State the rule: versions are
      pinned — do not introduce parallel libraries (e.g. don't add a second HTTP
      client or date library). -->
+
+<!-- FILL IN: record the approved implementation form and why it is sufficient.
+     Record whether a new remote server and custom UI are needed, with a
+     requirement-based reason for each. For MCP, record why the protocol layer
+     is needed instead of scripts alone. Mark absent components not applicable;
+     do not add infrastructure to satisfy these placeholders. -->
 
 ### File layout
 
