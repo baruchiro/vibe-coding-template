@@ -22,24 +22,32 @@ template hasn't been made into a real project yet when *any* of these are true:
 - `tests/example.test.mjs` still exists.
 
 In that state, **do not jump into building features.** Plan the project first.
-Invoke the `/plan-project` skill (`.claude/skills/plan-project/SKILL.md`). It
-orchestrates the bundled `brainstorming` and `writing-plans` skills (from the
-[`obra/superpowers`](https://github.com/obra/superpowers) collection) and turns
-the user's idea into a real starting point:
+Invoke the `/plan-project` skill (`.claude/skills/plan-project/SKILL.md`). It is
+built for a low-friction, assistant-led start: the agent does the legwork and
+prepares a compact kickoff proposal, and the owner approves the decisions that
+matter. Do not run interviews or multi-round question series — research what
+you can yourself and ask only the questions that genuinely block a decision,
+each with a recommended answer.
 
-1. Clarify the idea — problem, users, the one constraint that matters, what
-   "done enough to ship" looks like.
-2. After clarifying requirements, get approval for the **smallest sufficient
-   implementation form** — skill with scripts, local MCP, a combination, or an
-   application — before locking the stack. Justify a remote server and a custom
-   UI separately. Fill in the `Project-specific` sections of this file and
-   delete the `FILL IN` notes; mark unnecessary components as not applicable.
-3. Draft the **initial stories** and get them approved (stories are
-   approval-gated — see below), then replace the `CORE-*` examples in
-   `STORIES.md`. Mark not-yet-built ones `<!-- @unimplemented -->`.
-4. Point `/ship` and `.github/workflows/ci.yml` at the stack's real commands
+Three decisions belong to the owner, and when the idea already arrives scoped
+the agent should prepare them together and present them as one proposal:
+
+1. **Smallest sufficient implementation form** — skill with scripts, local
+   MCP, a combination, or an application — approved before locking the stack.
+   Justify a remote server and a custom UI separately.
+2. **Design** — how the approved form delivers the behavior (the
+   `brainstorming` skill ends in an approved design spec).
+3. **Initial stories** — the behavior contract in `STORIES.md`
+   (approval-gated — see below). Replace the `CORE-*` examples and mark
+   not-yet-built ones `<!-- @unimplemented -->`.
+
+Everything else is preparation the agent does without further approval rounds:
+
+4. Fill in the `Project-specific` sections of this file and delete the
+   `FILL IN` notes; mark unnecessary components as not applicable.
+5. Point `/ship` and `.github/workflows/ci.yml` at the stack's real commands
    (keep the `node scripts/check-stories.mjs` step).
-5. Pick the **first vertical slice** and hand off to implement it test-first.
+6. Pick the **first vertical slice** and hand off to implement it test-first.
 
 Delete `tests/example.test.mjs` once real tests exist, and delete this whole
 "First run" section once the project is underway.
@@ -88,12 +96,17 @@ This is an owner-approved planning gate, not an automated architecture detector.
 Keep stories, tests and verification for the chosen form; do not manufacture a
 web frontend, backend, database, dev server or build step just to fill a template.
 
-### Stories workflow (approval-gated)
+### Stories workflow (approval-gated on behavior)
 
 `STORIES.md` at the repo root is the **source of truth for product behavior**.
-It is **approval-gated**: every add, edit, or delete of a story requires
-explicit approval from the repository owner *before* the file is touched.
-Propose the exact text in chat, wait for "approved", then write.
+It is **approval-gated on behavior**: adding, deleting, or changing what a
+story says the product *does* requires explicit approval from the repository
+owner *before* the file is touched. Propose the exact text in chat, wait for
+"approved", then write — a one-word answer is enough. Edits that don't change
+behavior (typos, wording, formatting, restructuring prose with the same
+meaning) don't need pre-approval; make them and mention them in passing.
+Plans, task breakdowns, and tests are not approval-gated either — prepare
+them, note the story IDs they cover, and iterate directly.
 
 Coverage is enforced automatically:
 
@@ -167,9 +180,11 @@ gate, pushes the branch, and opens the PR. **Do not create a PR unless asked**
 For UI changes, include a screenshot of the change in the PR body. For
 backend-only changes, note "no UI surface changed" instead.
 
-### GitHub issue workflow
+### GitHub issue workflow (only when the project tracks issues)
 
-When picking up a GitHub issue, do these **before writing any code**:
+Most personal assistant-led projects have no issue tracker — skip this whole
+workflow until the project actually tracks work in GitHub issues. When it does
+and you pick up an issue, do these **before writing any code**:
 
 1. **Assign** the issue to the repo owner via `mcp__github__issue_write`
    (`method: update`, `assignees: ["<owner>"]`).
@@ -189,6 +204,10 @@ When picking up a GitHub issue, do these **before writing any code**:
 
 ### Working style
 
+- **Do the legwork.** Research, read code, and prepare proposals yourself;
+  bring the owner decisions, not questionnaires. When input is needed, ask the
+  fewest questions that settle the decision, with a recommended answer for
+  each.
 - **Plan first** before any non-trivial change. Course-correct in English, not
   in diffs.
 - **Vertical slices**: a feature means "this behavior visible end-to-end", not
@@ -197,10 +216,12 @@ When picking up a GitHub issue, do these **before writing any code**:
   the reader guess.
 - **Subagents** (e.g. `general-purpose` for research, `Explore` for read-only
   code search) keep the main context clean on big jobs.
-- **Superpowers skills** are vendored in `.claude/skills/` — invoke them by name
-  (`test-driven-development`, `systematic-debugging`,
-  `verification-before-completion`, `requesting-code-review`, …) instead of
-  reinventing the process. `README.md` lists the full set.
+- **Superpowers skills** are vendored in `.claude/skills/` as an on-demand
+  library, not a required pipeline. The everyday set is `brainstorming`,
+  `writing-plans`, `test-driven-development`, and
+  `verification-before-completion`; reach for the others
+  (`systematic-debugging`, `requesting-code-review`, …) when the situation
+  calls for them. `README.md` lists the full set.
 
 ---
 

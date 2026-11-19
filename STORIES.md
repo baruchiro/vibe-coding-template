@@ -1,9 +1,10 @@
 # Stories
 
-> This file is the source of truth for product behavior. Every change to a
-> story — adding, editing, deleting — requires explicit approval from the
-> repository owner. Code and tests adapt to the stories, not the other way
-> around. See `CLAUDE.md` § "Stories workflow" for the test-coverage rule.
+> This file is the source of truth for product behavior. Changing what a story
+> says the product does — adding, editing, deleting behavior — requires
+> explicit approval from the repository owner. Wording fixes that don't change
+> behavior don't need it. Code and tests adapt to the stories, not the other
+> way around. See `CLAUDE.md` § "Stories workflow" for the test-coverage rule.
 
 <!--
   How this file works
