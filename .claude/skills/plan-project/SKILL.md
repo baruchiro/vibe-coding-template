@@ -1,23 +1,40 @@
 ---
 name: plan-project
-description: First-run kickoff for a project cloned from this template. Orchestrates the bundled planning skills (optionally grill-me → brainstorming → writing-plans) and adds the template-specific glue — an approval-gated STORIES.md, filled-in CLAUDE.md, and wired toolchain. Use on a fresh clone (placeholders still present), or when the user says "plan the project", "let's start", "kick off", "what should we build first", or describes a new app/idea from scratch.
+description: Low-friction first-run kickoff for a project cloned from this template. The agent does the legwork and prepares one compact kickoff proposal; the owner approves the few decisions that matter (implementation form, design, initial stories). Adds the template-specific glue — an approval-gated STORIES.md, filled-in CLAUDE.md, and wired toolchain. Use on a fresh clone (placeholders still present), or when the user says "plan the project", "let's start", "kick off", "what should we build first", or describes a new app/idea from scratch.
 ---
 
 # plan-project
 
-Take an idea to a project that's ready to build test-first. This skill is a thin
-**orchestrator**: the thinking is done by battle-tested skills vendored from
-elsewhere —
+Take an idea to a project that's ready to build test-first — **without putting
+the owner through an interview**. This template's working style is
+assistant-led: you do the research, reading, and drafting; the owner makes the
+few decisions that are actually theirs. Never run a multi-round question
+series. When something is genuinely unclear, ask the smallest set of questions
+that settles it — one round, each question with your recommended answer.
 
-- **`grill-me`** (optional) — from [`mattpocock/skills`](https://github.com/mattpocock/skills).
-  A stateless, relentless interview that sharpens a loose idea into concrete
-  decisions before any design work starts. Reach for it only when the idea is
-  still vague; skip it when the user already arrives scoped.
+Three decisions belong to the owner; everything else is preparation you do
+without asking. When the idea already arrives scoped, prepare all three and
+present them as **one compact proposal** instead of three separate approval
+round-trips:
+
+1. **Implementation form** — skill with scripts, local MCP, a combination, or
+   an application (the gate in step 2).
+2. **Design** — via `brainstorming`, which ends in an approved design spec.
+3. **Initial stories** — the behavior contract in `STORIES.md`
+   (approval-gated on behavior; see step 4).
+
+This skill is a thin **orchestrator**: the thinking is done by battle-tested
+skills vendored from elsewhere —
+
 - **`brainstorming`** — from [`obra/superpowers`](https://github.com/obra/superpowers).
   Explore intent, constraints, and design; ends in an approved design spec. (It
   hard-gates: no code until you've presented a design and the user approved it.)
+  Its own clarifying questions are enough — don't add an interview on top.
 - **`writing-plans`** — from `obra/superpowers`. Turn a spec into a bite-sized,
   test-first implementation plan.
+
+The vendored `grill-me`/`grilling` skill (a relentless interview) is **not part
+of this flow** — invoke it only when the user explicitly asks to be grilled.
 
 What this skill adds is the glue those generic skills don't know about: this
 template's **STORIES.md** as the approval-gated source of truth, the
@@ -35,17 +52,15 @@ for `brainstorming` / `writing-plans` per-feature instead.
 
 ## Workflow
 
-### 1. Sharpen a loose idea — invoke `grill-me` (optional)
+### 1. Clarify — only what's blocking
 
-If the idea arrives loose ("something like X" with no real scope yet), grill it
-before design work starts: invoke the `grilling` skill — `grill-me`'s own
-`SKILL.md` is just a one-line forward to it, so invoke `grilling` directly. It
-interviews in rounds (a numbered frontier of questions plus your recommended
-answer each round) until every branch is settled. It's stateless — no files, no
-repo assumptions — so it's safe to run before `CLAUDE.md`/`STORIES.md` exist.
-Stay in the same conversation afterward; hand the sharpened idea straight to
-`brainstorming` next. Skip this step entirely when the user already arrives with
-a precise, scoped idea — `brainstorming`'s own clarifying questions are enough.
+If the idea arrives loose ("something like X" with no real scope yet), do the
+legwork first: research the domain, look at the owner's existing work, and form
+a concrete proposal of your own. Then ask **only** the questions that block
+the design — one short round, each with a recommended answer so the owner can
+reply "yes" or adjust. Facts are yours to find, never the owner's to supply;
+decisions are theirs. If the idea already arrives scoped, skip straight to
+`brainstorming` — its own clarifying questions are enough.
 
 ### 2. Brainstorm the design — invoke `brainstorming`
 
@@ -210,8 +225,8 @@ separate step.
 
 ## Output checklist
 
-- [ ] Loose idea sharpened via `grill-me`/`grilling` before design (or skipped
-      — idea already arrived scoped).
+- [ ] Blocking questions asked in at most one short round, each with a
+      recommended answer (no interview; `grill-me` only if the user asked).
 - [ ] Design spec written & approved (via `brainstorming`).
 - [ ] Implementation form compared and explicitly approved before stack/code;
       decision recorded in the design spec and `CLAUDE.md`.

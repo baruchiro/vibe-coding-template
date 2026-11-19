@@ -15,9 +15,9 @@ Distilled from [`baruchiro/github-management`](https://github.com/baruchiro/gith
 | `STORIES.md` | Source of truth for product behavior. Approval-gated, coverage-enforced. |
 | `scripts/check-stories.mjs` | Fails the build if a story has no tagged test (or a test tags an unknown story). Stack-agnostic. |
 | `tests/example.test.mjs` | A working example test tagged `// @story: CORE-1`, so the loop is green from the first commit. |
-| `.claude/skills/plan-project/SKILL.md` | `/plan-project` — the first-run kickoff: orchestrates the planning skills (optionally `grill-me` → `brainstorming` → `writing-plans`) and adds STORIES.md + toolchain wiring. |
-| `.claude/skills/<superpowers>/` | The full [`obra/superpowers`](https://github.com/obra/superpowers) skill set (14 skills) vendored via `npx skills`. Recorded in `skills-lock.json`; update with `npx skills update`. |
-| `.claude/skills/grill-me/`, `.claude/skills/grilling/` | A stateless, relentless-interview skill for sharpening a loose idea into concrete decisions before design starts, vendored from [`mattpocock/skills`](https://github.com/mattpocock/skills) via `npx skills`. `/plan-project` reaches for it first when the idea is still loose; `grill-me` is the user-invoked front door (`/grill-me`), `grilling` is the underlying interview it forwards to. |
+| `.claude/skills/plan-project/SKILL.md` | `/plan-project` — the low-friction first-run kickoff: the agent does the legwork and prepares one kickoff proposal (implementation form, design, initial stories, first slice); the owner approves the few decisions that matter. No interviews. |
+| `.claude/skills/<superpowers>/` | The full [`obra/superpowers`](https://github.com/obra/superpowers) skill set (14 skills) vendored via `npx skills`, as an on-demand library — the standard flow uses only `brainstorming`, `writing-plans`, `test-driven-development`, and `verification-before-completion`. Recorded in `skills-lock.json`; update with `npx skills update`. |
+| `.claude/skills/grill-me/`, `.claude/skills/grilling/` | A stateless, relentless-interview skill for sharpening a loose idea, vendored from [`mattpocock/skills`](https://github.com/mattpocock/skills) via `npx skills`. Opt-in only (`/grill-me`) — not part of the default flow; `/plan-project` asks just the questions that block a decision instead. |
 | `.claude/commands/ship.md` | `/ship` — the pre-push gate (typecheck, lint, story-coverage, tests, build). |
 | `.claude/skills/open-pr/SKILL.md` | `/open-pr` — run the gate, push, open the PR. |
 | `.claude/skills/playwright-cli/` | Browser automation for agents, vendored via `playwright-cli install --skills`. Backs the "verify UI changes in a real browser" rule. Needs the CLI binary — `/plan-project` walks the install. |
@@ -26,22 +26,25 @@ Distilled from [`baruchiro/github-management`](https://github.com/baruchiro/gith
 ## The workflow in one paragraph
 
 Behavior is written down as **stories** in `STORIES.md` before it's built, and
-every story change needs the owner's approval. Each story earns at least one
-test tagged `// @story: <ID>`; a coverage gate fails the build if any story is
-untested or a test references a story that doesn't exist. Before pushing, `/ship`
-runs the whole gate. PRs go out through `/open-pr`. Picking up a GitHub issue has
-a fixed opening (assign → comment session link → branch `{issue}-{slug}` → PR
-that `Closes #N`). It's all spelled out in `CLAUDE.md`.
+changing what a story says the product does needs the owner's approval (a
+one-word answer is enough; wording fixes and tests don't need it). Each story
+earns at least one test tagged `// @story: <ID>`; a coverage gate fails the
+build if any story is untested or a test references a story that doesn't
+exist. Before pushing, `/ship` runs the whole gate. PRs go out through
+`/open-pr`. A fixed GitHub-issue opening (assign → comment session link →
+branch `{issue}-{slug}` → PR that `Closes #N`) kicks in only once a project
+actually tracks issues. It's all spelled out in `CLAUDE.md`.
 
 ## Starting a new project from this template
 
 1. Copy these files into your new repo (or use it as a GitHub template repo).
 2. **Kick off with the agent**: describe your idea and run `/plan-project`. It
-   walks the empty-project bootstrap — sharpen a loose idea (`grill-me`), get
-   approval for the implementation form, lock only the needed toolchain, draft
-   approved stories, wire the toolchain, pick the first slice.
-   `CLAUDE.md`'s "First run" section tells the agent to do this before writing
-   any code.
+   does the legwork and comes back with one kickoff proposal — smallest
+   sufficient implementation form, design, initial stories, first slice — for
+   you to approve. No interview: it asks only the questions that genuinely
+   block a decision. If you'd rather be grilled on a loose idea first,
+   `/grill-me` is available on request. `CLAUDE.md`'s "First run" section
+   tells the agent to do this before writing any code.
 
    Doing it by hand instead? Steps 3–6 are that flow spelled out:
 3. Before picking a stack, compare a skill with local scripts, local MCP, a
@@ -69,7 +72,10 @@ that `Closes #N`). It's all spelled out in `CLAUDE.md`.
 
 The whole [`obra/superpowers`](https://github.com/obra/superpowers) skill set is
 pulled in with the [`skills`](https://www.npmjs.com/package/skills) CLI and
-committed here, so every clone has it offline:
+committed here, so every clone has it offline. It's a **library, not a
+pipeline** — the standard flow uses `brainstorming`, `writing-plans`,
+`test-driven-development`, and `verification-before-completion`; invoke the
+rest by name when a situation calls for them:
 
 ```sh
 npx skills add obra/superpowers --skill '*' -a claude-code -y
