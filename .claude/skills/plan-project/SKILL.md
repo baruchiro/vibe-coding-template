@@ -13,13 +13,13 @@ series. When something is genuinely unclear, ask the smallest set of questions
 that settles it — one round, each question with your recommended answer.
 
 Three decisions belong to the owner; everything else is preparation you do
-without asking. When the idea already arrives scoped, prepare all three and
-present them as **one compact proposal** instead of three separate approval
-round-trips:
+without asking. Prepare all three and present them as **one compact kickoff
+proposal** — the owner's single approval of it covers all three, so there are
+no separate approval round-trips later in this flow:
 
 1. **Implementation form** — skill with scripts, local MCP, a combination, or
-   an application (the gate in step 2).
-2. **Design** — via `brainstorming`, which ends in an approved design spec.
+   an application (the gate in step 2), with the recommended stack.
+2. **Design** — the short design that `brainstorming` would produce.
 3. **Initial stories** — the behavior contract in `STORIES.md`
    (approval-gated on behavior; see step 4).
 
@@ -29,7 +29,9 @@ skills vendored from elsewhere —
 - **`brainstorming`** — from [`obra/superpowers`](https://github.com/obra/superpowers).
   Explore intent, constraints, and design; ends in an approved design spec. (It
   hard-gates: no code until you've presented a design and the user approved it.)
-  Its own clarifying questions are enough — don't add an interview on top.
+  Inside this flow it is scoped to the batched kickoff (step 2): its
+  one-at-a-time questioning and per-section approvals are replaced by one
+  question round and one combined approval, while its hard gate stays.
 - **`writing-plans`** — from `obra/superpowers`. Turn a spec into a bite-sized,
   test-first implementation plan.
 
@@ -57,18 +59,31 @@ for `brainstorming` / `writing-plans` per-feature instead.
 If the idea arrives loose ("something like X" with no real scope yet), do the
 legwork first: research the domain, look at the owner's existing work, and form
 a concrete proposal of your own. Then ask **only** the questions that block
-the design — one short round, each with a recommended answer so the owner can
-reply "yes" or adjust. Facts are yours to find, never the owner's to supply;
-decisions are theirs. If the idea already arrives scoped, skip straight to
-`brainstorming` — its own clarifying questions are enough.
+the design — one short round (it may hold several questions), each with a
+recommended answer so the owner can reply "yes" or adjust. Facts are yours to
+find, never the owner's to supply; decisions are theirs. If the answers raise a
+further decision, don't open another round: fold it into the kickoff proposal
+as a flagged recommendation the owner can adjust. If the idea already arrives
+scoped, skip to step 2 with no questions.
 
-### 2. Brainstorm the design — invoke `brainstorming`
+### 2. Brainstorm the design and present the kickoff proposal — invoke `brainstorming`
 
-Hand off to the `brainstorming` skill. Let it drive: explore context, ask
-questions one at a time, apply the implementation-form gate below while
-comparing approaches, present a design, and — on approval
-— write the design spec (it saves to `docs/superpowers/specs/`). Don't shortcut
-its hard gate; come back here only once the user has approved the design.
+Hand off to the `brainstorming` skill, scoped to this flow. It supplies the
+context exploration, the comparison of approaches, and the design spec; this
+skill overrides its pacing:
+
+- Skip its one-at-a-time questioning — step 1 already settled the questions.
+- Apply the implementation-form gate below while comparing approaches.
+- Don't ask for approval section by section. Draft the design, the recommended
+  stack (step 3) and the initial stories (step 4), and present them together as
+  **one kickoff proposal** in chat.
+- That proposal is brainstorming's hard gate: do not scaffold, install, or write
+  code until the owner approves it. A one-word "yes" approves all three
+  decisions; if the owner adjusts one, revise that part and reconfirm only it.
+- On approval, write the design spec (it saves to `docs/superpowers/specs/`)
+  mirroring the approved proposal and run its inline self-review. Don't wait for
+  a separate spec-review round: point the owner to the spec path in the final
+  hand-off.
 
 #### Required gate: choose the implementation form before the stack
 
@@ -81,7 +96,8 @@ unclear, clarify the missing requirement instead of scaffolding a default app.
 
 Ask whether the required outcome can be delivered without a deployed server or
 a custom UI. Recommend the smallest sufficient form, identify any requirements
-it cannot meet, and get explicit owner approval before locking a stack,
+it cannot meet, and include it in the kickoff proposal; the owner's approval of
+that proposal is the explicit approval required before locking a stack,
 scaffolding, or installing infrastructure. Record this decision in the design
 spec and the Project-specific section of `CLAUDE.md`.
 
@@ -100,10 +116,11 @@ requirements introduce unmet needs; get approval before expanding the form.
 
 ### 3. Lock the minimal toolchain → fill in `CLAUDE.md`
 
-From the approved design and implementation form, recommend only the needed
+From the design and implementation form, recommend only the needed
 stack components (runtime, framework, language, data layer, styling, test runner,
 lint/format) with versions — one
-recommendation with a one-line reason each. On approval, fill the
+recommendation with a one-line reason each — as part of the kickoff proposal.
+Its approval covers the stack; don't ask again. Once approved, fill the
 **Project-specific** sections of `CLAUDE.md` (purpose, stack, layout, commands,
 env vars, setup) and delete each `<!-- FILL IN -->` note. Mark unneeded components
 and commands as not applicable with a reason; do not add a framework, database,
@@ -113,10 +130,10 @@ assuming a browser URL.
 
 ### 4. Derive the stories → `STORIES.md` (approval-gated)
 
-Translate the approved design into behavioral stories. **Stories are the
+Translate the design into behavioral stories. **Stories are the
 template's source of truth for product behavior** — a different artifact from the
-superpowers design spec (which captures *how* it's built). Propose the story text
-**in chat** first:
+superpowers design spec (which captures *how* it's built). Include the story text
+in the kickoff proposal, **in chat**, before writing the file:
 
 - Group by feature area with a stable prefix (`AUTH-`, `CORE-`, …); each story is
   `## PREFIX-N — Title` + an "As a …, I want …, so that …" paragraph about
@@ -124,8 +141,10 @@ superpowers design spec (which captures *how* it's built). Propose the story tex
 - Sequence them: first-slice stories vs. roadmap. Mark not-yet-built ones
   `<!-- @unimplemented -->`.
 
-Iterate until the owner says "approved", then write `STORIES.md`, replacing the
-`CORE-*` examples.
+The owner's approval of the kickoff proposal approves these stories; revise
+only the parts they adjusted. Then write `STORIES.md`, replacing the `CORE-*`
+examples. Later changes to what a story says the product does need fresh
+approval, per `CLAUDE.md`.
 
 ### 5. Wire the toolchain
 
@@ -227,8 +246,10 @@ separate step.
 
 - [ ] Blocking questions asked in at most one short round, each with a
       recommended answer (no interview; `grill-me` only if the user asked).
-- [ ] Design spec written & approved (via `brainstorming`).
-- [ ] Implementation form compared and explicitly approved before stack/code;
+- [ ] One kickoff proposal (implementation form, design, stack, initial stories)
+      presented and approved before any scaffolding or code.
+- [ ] Design spec written from the approved proposal (via `brainstorming`).
+- [ ] Implementation form compared and approved as part of that proposal;
       decision recorded in the design spec and `CLAUDE.md`.
 - [ ] Remote server and custom UI each justified or explicitly unnecessary;
       MCP's protocol layer justified if chosen over scripts alone.
